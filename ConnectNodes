@@ -1,0 +1,99 @@
+class Solution {
+    Map<Integer, List<Integer>> adjacency_List = new HashMap<>();
+    Map<Integer, List<Integer>> parentMap = new HashMap<>();
+    List<Integer> parent_same_child = new ArrayList<>();
+    Integer child_many_parents = 0;
+
+    public int[] find_connectioned_nodes(int[][] edges) {
+        
+        int[] select_del_edge = new int[2];        
+        for (i=0; i < edges.length; i++) {
+            int[] edge = edges[i];
+            if (two_parents(edge[0], edge[1])) {                
+                select_del_edge[0] = edge[0];
+                select_del_edge[1] = edge[1];
+                child_many_parents = edge[1];
+                parentsWithSameChild = parentMap.get(edge[1]);
+                break;
+            }
+            graph_increase(edge[0], edge[1]);
+            if (hasCircle(edge[0], edge[0])) {                
+                select_del_edge[0] = edge[0];
+                select_del_edge[1] = edge[1];
+                break;
+            } 
+        }
+        construct_graph(edges, i);
+        if (parentsWithSameChild.size() > 1) {            
+            for (Integer parent : parentsWithSameChild) {
+                if (isacircle(parent, parent)) {
+                    select_del_edge[0] = parent;
+                    select_del_edge[1] = child_many_parents;
+                } 
+            }    
+        }
+        return select_del_edge;
+    }
+    
+    public boolean two_parents(Integer parent, Integer child_node) {
+        if (parentMap.containsKey(child_node)) {
+            parentMap.get(child_node).add(parent);
+            return true;
+        } else {
+            parentMap.put(child_node, new ArrayList<>());
+            parentMap.get(child_node).add(parent);
+            return false;
+        }
+    }
+
+
+    public boolean isacircle(Integer first, Integer final) {
+        boolean[] visited = new boolean[1001];
+        visited[first] = true;
+        Stack<Integer> stack = new Stack<>();
+        stack.add(first);
+        while (!stack.isEmpty()) {
+            Integer currentNode = stack.pop();            
+            List<Integer> neighbor_nodes = adjacencyList.get(currentNode);
+            if (neighbor_nodes != null) {
+                for (Integer neighbor_node : neighbor_nodes) {
+                    if (neighbor_node.equals(final)) {
+                        return true;
+                    }   
+                    if (!visited[neighbor_node]) {
+                        visited[neighbor_node] = true;
+                        stack.push(neighbor_node);
+                    }
+                }              
+            }           
+        }
+        return false;
+    }
+
+    public void graph_increase(Integer src, Integer final) {
+        if (adjacency_List.containsKey(src)) {
+            adjacency_List.get(src).add(final);
+        } else {
+            adjacency_List.put(src, new ArrayList<>());
+            adjacency_List.get(src).add(final);
+        }
+    }
+
+    public void construct_graph(int[][] edges, int init_point) { 
+        for (init_point; init_point < edges.length; init_point++) {
+            int[] edge = edges[init_point];
+            int src = edge[0];
+            int final_pt = edge[1];
+            if (adjacency_List.containsKey(src)) {
+                adjacency_List.get(src).add(final_pt);
+            } else {
+                adjacency_List.put(src, new ArrayList<>());
+                adjacency_List.get(src).add(final_pt);
+            }
+            if (two_parents(edge[0], edge[1])) {                                
+                two_parents = edge[1];
+                single_child_parent = parentMap.get(edge[1]);             
+            }
+        }        
+    }
+}
